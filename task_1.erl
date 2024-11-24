@@ -1,6 +1,7 @@
 -module(task_1).
 -export([start/2, produce/3, consume/1, pipeline_handler/2]).
 
+-record(truck, {id, capacity, currentSize}).
 -record(package, {id}).
 
 start(PipelinesNum, PackagesNum) ->
@@ -38,16 +39,38 @@ produce(Pipeline, PipelineId, PackageNum, Id) when PackageNum >= Id ->
 produce(Pipeline, _, _, _) ->
   Pipeline ! stop.
 
-
-
 consume(PipelineId) ->
+  Truck = #truck{id = 1, capacity = 10, currentSize = 0},
+  consume(PipelineId, Truck).
+
+consume(PipelineId, Truck) ->
   receive
     Package when is_record(Package, package) ->
-      io:format("Package_~p consumed in pipeline_~p .~n", [Package#package.id, PipelineId]),
-      consume(PipelineId);
+      case truckIsFull(Truck) of
+        true ->
+          io:format("In Pipeline_~p: Truck_~p is full, Creating a new one.~n", [PipelineId, Truck#truck.id]),
+          NewTruck = #truck{id = Truck#truck.id + 1, capacity = Truck#truck.capacity, currentSize = 0},
+          UpdatedTruck = addPackageToTruck(NewTruck),
+          io:format("In Pipeline_~p: New Truck_~p loaded package_~p. CurrentSize: ~p/~p.~n",
+            [PipelineId, UpdatedTruck#truck.id, Package#package.id, UpdatedTruck#truck.currentSize, UpdatedTruck#truck.capacity]),
+          consume(PipelineId, UpdatedTruck);
+
+        false ->
+          UpdatedTruck = addPackageToTruck(Truck),
+          io:format("In Pipeline_~p: Truck_~p loaded package_~p. CurrentSize: ~p/~p.~n",
+            [PipelineId, UpdatedTruck#truck.id, Package#package.id, UpdatedTruck#truck.currentSize, UpdatedTruck#truck.capacity]),
+          consume(PipelineId, UpdatedTruck)
+      end;
     stop ->
       io:format("Pipeline_~p consumer is closed. No more packages.~n", [PipelineId]);
     _ ->
       io:format("Invalid msg received in Pipeline_~p consumer.~n", [PipelineId]),
       consume(PipelineId)
   end.
+
+
+truckIsFull(Truck) ->
+  Truck#truck.capacity == Truck#truck.currentSize.
+
+addPackageToTruck(Truck) ->
+  Truck#truck{currentSize = Truck#truck.currentSize + 1}.
