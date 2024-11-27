@@ -1,0 +1,16 @@
+  O projeto esta dividido em quatro métodos principais.
+	- Start()
+	- PipelineHandler()
+	- Producer()
+	- Consumer()
+  Start() recebe o numero de conveyor belts que no nosso programa é representado por pipeline. Este 
+metodo para cada conveyor belts iniciliza os metodos PipelineHandler(), Producer() e Consumer() cada um 
+faz o programa funcionar para um conveyor belt logo sao lancados as mesmas vezes que o numero de conveyor belts.
+  Producer() representa a producao de packages para cada conveyor belt. Este metodo cria packages e envias 
+para o pipeline.
+  Pipeline_handler() representa um conveyor belt, ou seja, a ligacao entre o producer e o consumer (local onde
+são guardadas as packages e o truck). Este metodo fica a espera ate receber uma package do consumer e envia
+para o producer. 
+  Consumer() representa o local onde os trucks estão a espera para serem carregados. Este metodo fica a espera
+que o pipeline envie uma package e verifica se o truck está cheio ou não. Se não estiver cheio mete a package 
+dentro dessa truck se não cria uma nova truck e mete lá a package.

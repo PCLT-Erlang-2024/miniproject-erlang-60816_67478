@@ -1,0 +1,4 @@
+Para adicionar esta funcionalidade foi bastante simples.
+Cada package é criada com um tamanho aleatório e cada truck guarda a sua capacidade e o sua carga atual.
+E em vez de verificarmos se o truck está cheio antes de colocar lá a package verificamos se ele 
+ainda tem espaço para ela.
